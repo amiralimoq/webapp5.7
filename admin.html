@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Royam Panel</title>
+    <!-- لینک به فایل CSS جدید -->
+    <link rel="stylesheet" href="admin.css">
+    <!-- آیکون‌ها -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <!-- Supabase -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <!-- Overlay برای موبایل -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <div class="dashboard-container">
+        
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="logo">
+                Royam<span>Panel</span>
+            </div>
+
+            <ul class="menu-list">
+                <li class="menu-item active" data-target="dashboard">
+                    <i class="ri-dashboard-line"></i> Dashboard
+                </li>
+                
+                <li class="menu-item" data-target="price-management">
+                    <i class="ri-price-tag-3-line"></i> Price Management
+                </li>
+
+                <li class="menu-item" data-target="customers">
+                    <i class="ri-user-smile-line"></i> Customers
+                </li>
+
+                <li class="menu-item" data-target="discounts">
+                    <i class="ri-ticket-line"></i> Discounts
+                </li>
+
+                <li class="menu-item" data-target="sales">
+                    <i class="ri-bar-chart-groupped-line"></i> Sales
+                </li>
+
+                <!-- آیتم‌های مخصوص ادمین -->
+                <li class="menu-item admin-only" data-target="users">
+                    <i class="ri-user-settings-line"></i> Users Management
+                </li>
+
+                <li class="menu-item admin-only" data-target="templates">
+                    <i class="ri-palette-line"></i> Templates
+                </li>
+
+                <li class="menu-item admin-only" data-target="reviews">
+                    <i class="ri-star-smile-line"></i> Reviews
+                </li>
+
+                <li class="menu-item" data-target="messages">
+                    <i class="ri-message-2-line"></i> Messages
+                </li>
+
+                <li class="menu-item logout">
+                    <i class="ri-logout-box-r-line"></i> Logout
+                </li>
+            </ul>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            
+            <!-- Header -->
+            <header class="header">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <i class="ri-menu-2-line mobile-menu-btn" onclick="toggleSidebar()" style="display: none;"></i>
+                    <h2 id="section-title">Dashboard</h2>
+                </div>
+                
+                <div class="user-profile" id="profile-trigger" style="cursor: pointer;">
+                    <div class="user-info">
+                        <h4 id="header-username">maman</h4>
+                        <span id="header-role">MANAGER</span>
+                    </div>
+                    <div class="user-img"></div>
+                </div>
+            </header>
+
+            <!-- 1. DASHBOARD SECTION -->
+            <section id="dashboard" class="content-section active-section">
+                <h3>Daily Overview</h3>
+                <div class="card-grid">
+                    <div class="stat-card">
+                        <div class="icon-box bg-green"><i class="ri-shopping-basket-2-line"></i></div>
+                        <div class="info">
+                            <h3>Total Orders (Month)</h3>
+                            <h2 id="dash-orders">Loading...</h2>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon-box bg-orange"><i class="ri-money-dollar-circle-line"></i></div>
+                        <div class="info">
+                            <h3>Total Revenue (Month)</h3>
+                            <h2 id="dash-revenue">Loading...</h2>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Google Sheets Widget -->
+                <div class="settings-card" style="display: flex; align-items: center; justify-content: space-between; margin-top: 20px;">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div class="icon-box bg-green" style="width: 50px; height: 50px; font-size: 24px;">
+                            <i class="ri-file-excel-2-line"></i>
+                        </div>
+                        <div>
+                            <h4 style="margin: 0;">Sales Report (Google Sheets)</h4>
+                            <p style="font-size: 12px; color: var(--text-grey); margin: 0;" id="sheet-status">Today's Status: Checking...</p>
+                        </div>
+                    </div>
+                    <button class="btn-save" id="btn-send-report">
+                        <i class="ri-send-plane-fill"></i> Send Report Now
+                    </button>
+                </div>
+            </section>
+                        <!-- 2. PRICE MANAGEMENT SECTION -->
+            <section id="price-management" class="content-section">
+                <div class="card-grid" style="grid-template-columns: 1fr 1fr;">
+                    <div class="stat-card" style="cursor: pointer;" onclick="document.getElementById('manual-price-box').style.display='block'; document.getElementById('bulk-price-box').style.display='none';">
+                        <div class="icon-box bg-blue"><i class="ri-edit-line"></i></div>
+                        <div class="info"><h3>Mode</h3><h2>Manual Edit</h2></div>
+                    </div>
+                    <div class="stat-card" style="cursor: pointer;" onclick="document.getElementById('manual-price-box').style.display='none'; document.getElementById('bulk-price-box').style.display='block';">
+                        <div class="icon-box bg-orange"><i class="ri-percent-line"></i></div>
+                        <div class="info"><h3>Mode</h3><h2>Percentage Update</h2></div>
+                    </div>
+                </div>
+
+                <!-- Manual Edit Area -->
+                <div id="manual-price-box" class="settings-card">
+                    <h4>Manual Product Price Edit</h4>
+                    <div class="placeholder-list" id="price-list-container">
+                        Loading products...
+                    </div>
+                </div>
+
+                <!-- Bulk Update Area -->
+                <div id="bulk-price-box" class="settings-card" style="display: none;">
+                    <h4>Bulk Price Update</h4>
+                    <div class="form-group">
+                        <label>Category:</label>
+                        <select id="bulk-category">
+                            <option value="all">All Categories</option>
+                            <option value="pizza">Pizza</option>
+                            <option value="burger">Burger</option>
+                            <option value="drinks">Drinks</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Percentage (%):</label>
+                        <input type="number" id="bulk-percent" placeholder="e.g. 10 or -5">
+                    </div>
+                    <p style="font-size: 12px; color: var(--text-grey); margin-bottom: 15px;">Use negative numbers for discounts.</p>
+                    <button class="btn-save" onclick="applyBulkPrice()">Apply Changes</button>
+                </div>
+            </section>
+
+            <!-- 3. CUSTOMERS SECTION -->
+            <section id="customers" class="content-section">
+                <div class="settings-card">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                        <h3>All Customers</h3>
+                        <input type="text" placeholder="Search customer..." style="max-width: 200px;">
+                    </div>
+                    <div class="placeholder-list" id="customers-list">Loading Customers...</div>
+                </div>
+            </section>
+
+            <!-- 4. DISCOUNTS SECTION -->
+            <section id="discounts" class="content-section">
+                <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+                    <button class="btn-save" onclick="openDiscountModal()">+ Create Discount</button>
+                </div>
+                
+                <!-- Filters -->
+                <div class="settings-card" style="margin-bottom: 20px; padding: 20px;">
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <select onchange="filterDiscounts()" id="filter-status"><option value="all">Status: All</option><option value="active">Active</option><option value="expired">Expired</option></select>
+                        <select onchange="filterDiscounts()" id="filter-type"><option value="all">Type: All</option><option value="public">Public</option><option value="private">Private</option></select>
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <div class="placeholder-list" id="discounts-list" style="display: block;">
+                        <!-- Table Header -->
+                        <div style="display: flex; padding: 10px; background: #f9f9f9; border-radius: 10px; font-weight: 600; font-size: 13px; color: var(--text-grey);">
+                            <span style="flex:2;">Code Name</span>
+                            <span style="flex:1;">Type</span>
+                            <span style="flex:1;">Usage</span>
+                            <span style="flex:1;">Min Order</span>
+                            <span style="flex:1;">Status</span>
+                            <span style="flex:1; text-align: right;">Actions</span>
+                        </div>
+                        <div id="discounts-table-body" style="margin-top: 10px;">
+                            <!-- JS populate here -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- 5. SALES SECTION -->
+            <section id="sales" class="content-section">
+                <div class="settings-card">
+                    <h3>Sales Analytics</h3>
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                         <button class="btn-save" style="background:var(--primary-color);" onclick="quickReport(1)">Today</button>
+                         <button class="btn-save" style="background:#ddd; color:#333;" onclick="quickReport(7)">7 Days</button>
+                         <button class="btn-save" style="background:#ddd; color:#333;" onclick="quickReport(30)">30 Days</button>
+                    </div>
+                    <div class="placeholder-list">
+                        <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee;">
+                            <span style="flex: 2;">Product Name</span>
+                            <span style="flex: 1; text-align: center;">Qty Sold</span>
+                            <span style="flex: 1; text-align: right;">Total Sales</span>
+                        </div>
+                        <div id="sales-report-body">
+                            <!-- JS Populates Here -->
+                            <p style="text-align: center; color: var(--text-grey); margin-top: 20px;">Select a date range to view report.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 6. USERS MANAGEMENT (Admin Only) -->
+            <section id="users" class="content-section">
+                <div class="settings-card">
+                    <div class="status-tabs" style="margin-bottom: 20px;">
+                        <div class="tab active-cat" id="tab-staff-btn" onclick="switchUserTab('staff', this)">Staff</div>
+                        <div class="tab" id="tab-admin-btn" onclick="switchUserTab('admin', this)">Admins</div>
+                    </div>
+                    
+                    <!-- Staff Area -->
+                    <div id="user-tab-staff">
+                        <div class="form-group" style="background: #f9f9f9; padding: 15px; border-radius: 12px;">
+                            <input type="text" id="new-user" placeholder="New Staff Username">
+                            <input type="text" id="new-pass" placeholder="Password">
+                            <button class="btn-save" id="create-btn">Create Staff</button>
+                        </div>
+                        <div class="placeholder-list" id="staff-list-container">Loading Staff...</div>
+                    </div>
+
+                    <!-- Admin Area -->
+                    <div id="user-tab-admin" style="display: none;">
+                        <div class="form-group" style="background: #f9f9f9; padding: 15px; border-radius: 12px;">
+                            <input type="text" id="admin-user" placeholder="New Admin Username">
+                            <input type="text" id="admin-pass" placeholder="Password">
+                            <button class="btn-save" id="create-admin-btn">Create Admin</button>
+                        </div>
+                        <div class="placeholder-list" id="admin-list-container">Loading Admins...</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 7. TEMPLATES SECTION -->
+            <section id="templates" class="content-section">
+                <div class="card-grid">
+                    <div class="stat-card template-card" onclick="setTheme('default', this)">
+                        <div class="icon-box" style="background: #eee;">🎨</div>
+                        <div class="info"><h3>Theme</h3><h2>Classic Light</h2></div>
+                    </div>
+                    <div class="stat-card template-card" onclick="setTheme('dark', this)">
+                        <div class="icon-box" style="background: #333; color: #fff;">🌑</div>
+                        <div class="info"><h3>Theme</h3><h2>Midnight Dark</h2></div>
+                    </div>
+                    <div class="stat-card template-card" onclick="setTheme('ocean', this)">
+                        <div class="icon-box" style="background: #E3F2FD; color: #0288D1;">🌊</div>
+                        <div class="info"><h3>Theme</h3><h2>Ocean Blue</h2></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 8. REVIEWS SECTION -->
+            <section id="reviews" class="content-section">
+                <div class="settings-card">
+                    <h3>Customer Reviews</h3>
+                    <div class="placeholder-list" id="reviews-container">Loading reviews...</div>
+                </div>
+            </section>
+
+            <!-- 9. MESSAGES SECTION -->
+            <section id="messages" class="content-section">
+                <div class="settings-card">
+                    <h3>Messages</h3>
+                    <div class="placeholder-list" id="messages-container">Loading messages...</div>
+                </div>
+            </section>
+
+        </main> <!-- End Main Content -->
+    </div> <!-- End Dashboard Container -->
+
+    <!-- CUSTOM MODALS -->
+    
+    <!-- Profile Edit Modal -->
+    <div id="profile-modal" class="sidebar-overlay" style="display: none; align-items: center; justify-content: center;">
+        <div class="settings-card" style="width: 400px; max-width: 90%; margin: auto; position: relative; animation: fadeUp 0.3s;">
+            <h3>Edit Profile</h3>
+            <div class="form-group" style="flex-direction: column; align-items: flex-start;">
+                <label>Username</label>
+                <input type="text" id="edit-self-user" style="width: 100%;">
+            </div>
+            <div class="form-group" style="flex-direction: column; align-items: flex-start;">
+                <label>Password</label>
+                <input type="text" id="edit-self-pass" style="width: 100%;">
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                <button class="btn-save" style="background: #ccc; color: #333;" onclick="document.getElementById('profile-modal').style.display='none'">Cancel</button>
+                <button class="btn-save" id="save-profile-btn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Discount Modal -->
+    <div id="discount-modal" class="sidebar-overlay" style="display: none; align-items: center; justify-content: center;">
+        <div class="settings-card" style="width: 500px; max-width: 90%; margin: auto; height: 80vh; overflow-y: auto; position: relative;">
+            <h3>Create Discount Code</h3>
+            
+            <div class="form-group"><label>Code Name:</label><input type="text" id="d-code"></div>
+            <div class="form-group"><label>Percent (%):</label><input type="number" id="d-percent"></div>
+            
+            <div class="form-group">
+                <label>Type:</label>
+                <select id="d-type"><option value="public">Public</option><option value="private">Private</option></select>
+            </div>
+
+            <div class="form-group">
+                <label>Usage:</label>
+                <select id="d-usage"><option value="single">Single Use</option><option value="multi">Multi Use</option></select>
+            </div>
+
+            <div class="form-group"><label>Min Order ($):</label><input type="number" id="d-min"></div>
+            
+            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                <button class="btn-save" style="background: #ccc; color: #333;" onclick="document.getElementById('discount-modal').style.display='none'">Cancel</button>
+                <button class="btn-save" onclick="createDiscount()">Create Discount</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script JS -->
+    <script src="admin.js"></script>
+</body>
+</html>
+          
