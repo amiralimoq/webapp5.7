@@ -1,4 +1,4 @@
-/* admin.css */
+/* admin.css - Royam 1.1 (Updated Dashboard Styles) */
 :root {
     --primary-color: #FF724C;
     --primary-light: #FFF0EB;
@@ -84,7 +84,6 @@ body {
     margin-bottom: 12px;
     cursor: pointer;
     border-radius: 16px;
-    /* انیمیشن نرم برای تغییرات */
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
@@ -96,22 +95,19 @@ body {
     transition: transform 0.3s ease;
 }
 
-/* هاور: حرکت آرام به سمت راست */
 .menu-item:hover:not(.active) {
     background-color: #f9f9f9;
     color: var(--text-dark);
     transform: translateX(8px);
 }
 
-/* حالت فعال (انتخاب شده) */
 .menu-item.active {
-    background-color: var(--primary-color); /* دکمه کامل نارنجی می‌شود */
-    color: #FFFFFF; /* متن سفید می‌شود */
+    background-color: var(--primary-color);
+    color: #FFFFFF;
     box-shadow: 0 4px 15px rgba(255, 114, 76, 0.4);
-    transform: translateX(5px) scale(1.02); /* کمی بزرگتر و به سمت راست */
+    transform: translateX(5px) scale(1.02);
 }
 
-/* برای اینکه آیکون در حالت فعال کمی حرکت کند */
 .menu-item.active i {
     transform: scale(1.1);
 }
@@ -135,19 +131,15 @@ body {
     background-color: var(--bg-color);
 }
 
-/* کلاس پایه برای همه سکشن‌ها - مخفی به صورت پیش‌فرض */
 .content-section {
     display: none;
-    /* انیمیشن اولیه */
     animation: fadeUp 0.5s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
 }
 
-/* کلاس برای نمایش سکشن فعال */
 .active-section {
     display: block;
 }
 
-/* انیمیشن محتوا: از پایین به بالا ظاهر شدن */
 @keyframes fadeUp {
     0% {
         opacity: 0;
@@ -205,14 +197,18 @@ body {
     margin-bottom: 30px;
 }
 
+/* 
+   UPDATED STAT-CARD TO MATCH ROYAM 1.0 
+   Applied Three Laws: Changed font size, padding, gap.
+*/
 .stat-card {
     background: white;
-    padding: 25px;
+    padding: 20px; /* Reduced from 25px */
     border-radius: 20px;
     display: flex;
     align-items: center;
-    gap: 20px;
-    box-shadow: var(--card-shadow);
+    gap: 15px; /* Reduced from 20px */
+    box-shadow: 0 10px 40px rgba(0,0,0,0.03);
     transition: transform 0.3s;
 }
 .stat-card:hover { transform: translateY(-5px); }
@@ -230,8 +226,18 @@ body {
 .bg-orange { background: #FFF0EB; color: #FF724C; }
 .bg-blue { background: #E3F2FD; color: #2196F3; }
 
-.info h3 { font-size: 14px; color: var(--text-grey); margin-bottom: 5px; }
-.info h2 { font-size: 24px; color: var(--text-dark); }
+/* Font updates for Dashboard labels/values to match 1.0 */
+.info h3 { 
+    font-size: 12px; /* Reduced from 14px */
+    color: #888;     /* Changed color */
+    margin-bottom: 5px; 
+    font-weight: 400;
+}
+.info h2 { 
+    font-size: 18px; /* Reduced from 24px */
+    color: #2A2A2A; 
+    font-weight: 700;
+}
 
 /* --- Forms & Settings --- */
 .settings-card {
